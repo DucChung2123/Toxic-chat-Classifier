@@ -1,0 +1,5 @@
+ipykernel
+transformers
+torch
+dotenv
+datasets
