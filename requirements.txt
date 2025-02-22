@@ -3,3 +3,6 @@ transformers
 torch
 dotenv
 datasets
+fastapi
+uvicorn
+pydantic

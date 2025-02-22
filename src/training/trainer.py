@@ -82,10 +82,8 @@ def train_model(model, train_dataset, val_dataset, config):
                 val_correct += (preds == labels).sum().item()
                 val_total += labels.size(0)
 
-                # Cập nhật progress bar cho validation
                 val_progress.set_postfix(val_loss=loss.item(), val_acc=val_correct/val_total)
 
         print(f"Validation Loss: {val_loss/len(val_loader):.4f}, Validation Accuracy: {val_correct/val_total:.4f}\n")
         
-    # Lưu model sau khi train xong
-    torch.save(model.state_dict(), config["training"]["save_model_path"] + "model_toxic_classifier.pth")
+    torch.save(model.state_dict(), config["training"]["save_model_path"] + ".pth")
