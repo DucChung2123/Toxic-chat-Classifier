@@ -4,9 +4,9 @@ from transformers import AutoModel
 
 class ToxicClassifier(nn.Module):
     
-    def __init__(self, model_name: str, num_lables: int = 2):
+    def __init__(self, model_name: str, num_lables: int = 2, cache_dir: str = None):
         super(ToxicClassifier, self).__init__()
-        self.model = AutoModel.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name, cache_dir=cache_dir)
         self.dropout = nn.Dropout(0.3)
         self.classifier = nn.Linear(self.model.config.hidden_size, num_lables)
     

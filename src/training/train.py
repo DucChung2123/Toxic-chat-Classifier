@@ -11,7 +11,7 @@ train_dataset = ToxicDataset(config["data"]["train_file"], config["model"]["name
 val_dataset = ToxicDataset(config["data"]["val_file"], config["model"]["name"], config["training"]["max_length"])
 
 # Load model
-model = ToxicClassifier(config["model"]["name"], config["model"]["num_labels"])
+model = ToxicClassifier(config["model"]["name"], config["model"]["num_labels"], config["model"]["cache_dir"])
 
 # Train model
 train_model(model, train_dataset, val_dataset, config)
