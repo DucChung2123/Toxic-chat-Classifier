@@ -44,29 +44,31 @@ class ToxicClassifierAPI:
             "confidence": probs[0, predicted_class].item()
         }
     
-    def batch_predict(self, texts: list[str]):
-        encodings = self.tokenizer(
-            texts,
-            padding="max_length",
-            truncation=True,
-            max_length=self.config["training"]["max_length"],
-            return_tensors="pt",
-            return_attention_mask=True
-        )
-        input_ids = encodings["input_ids"].to(self.device)
-        attention_mask = encodings["attention_mask"].to(self.device)
-
-        with torch.no_grad():
-            outputs = self.model(input_ids, attention_mask)
-            probs = torch.nn.functional.softmax(outputs, dim=1)
-            predicted_classes = torch.argmax(probs, dim=1)
-
+    def batch_predict(self, texts: list[str], batch_size: int = 32):
         results = []
-        for text, predicted_class, prob in zip(texts, predicted_classes, probs):
-            results.append({
-                "text": text,
-                "label": "toxic" if predicted_class == 1 else "normal",
-                "confidence": prob[predicted_class].item()
-            })
+        for i in range(0, len(texts), batch_size):
+            batch_texts = texts[i:i + batch_size]
+            encodings = self.tokenizer(
+                batch_texts,
+                padding="max_length",
+                truncation=True,
+                max_length=self.config["training"]["max_length"],
+                return_tensors="pt",
+                return_attention_mask=True
+            )
+            input_ids = encodings["input_ids"].to(self.device)
+            attention_mask = encodings["attention_mask"].to(self.device)
+
+            with torch.no_grad():
+                outputs = self.model(input_ids, attention_mask)
+                probs = torch.nn.functional.softmax(outputs, dim=1)
+                predicted_classes = torch.argmax(probs, dim=1)
+
+            for text, predicted_class, prob in zip(batch_texts, predicted_classes, probs):
+                results.append({
+                    "text": text,
+                    "label": "toxic" if predicted_class == 1 else "normal",
+                    "confidence": prob[predicted_class].item()
+                })
 
         return results
